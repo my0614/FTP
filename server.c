@@ -7,6 +7,8 @@
 #include <arpa/inet.h>
 #include <dirent.h>
 
+#include "files.h"
+
 int open_server(int port)
 {
 	int serv_sock = 0;
@@ -58,7 +60,13 @@ int main(int argc, char *argv[])
 
     while(1)
     {
+        memset(buffer,0,1024);
         recv(clnt_sock, buffer, 1024,0); // 받아오기
+        if (strlen(buffer) <= 0) {
+            continue;
+        }
+
+        printf("buffer = %s\n",buffer);
         if(!strcmp(buffer,"ls"))
         {
             int name_count = 0;
@@ -76,11 +84,15 @@ int main(int argc, char *argv[])
         }
         else if(!strcmp(buffer,"cd"))
         {
-
+            recv(clnt_sock,buffer,1024,0);
+            chdir(buffer);
         }
         else if(!strcmp(buffer,"get"))
         {
-
+            recv(clnt_sock, buffer,1024,0);
+            printf("file_path : %s\n", buffer);
+            upload(clnt_sock, buffer); // buffer is file_path
+            
         }
         else if(!strcmp(buffer,"put"))
         {
