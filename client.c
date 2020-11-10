@@ -1,3 +1,14 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <dirent.h>
+
+#include "files.h"
+
 
 /* 소켓을 생성하고 서버에 connect 작업을 수행한 후, 소켓의 fd 반환 */
 int open_connection(const char *host, int port)
@@ -25,6 +36,8 @@ int open_connection(const char *host, int port)
 
 int main(int argc , char *argv[])
 {
+    int sock =0;
+    char buffer[1024];
     if(argc != 3)
     {
         printf("argc 개수 에러\n");
@@ -35,11 +48,12 @@ int main(int argc , char *argv[])
 
     while(1)
     {
+        
         scanf("%s",buffer);
         send(sock, buffer, 1024,0); // 보내기
          if(!strcmp(buffer,"ls"))
         {
-            int name_count;
+            int name_count = 0;
             recv(sock,&name_count,sizeof(name_count),0); // ls 파일 개수 가져오기
             for(int i=0;i<name_count;i++)
             {
@@ -49,11 +63,15 @@ int main(int argc , char *argv[])
         }
         else if(!strcmp(buffer,"cd"))
         {
-
+            scanf("%s",buffer);
+            send(sock, buffer,1024,0);
         }
         else if(!strcmp(buffer,"get"))
         {
-
+            scanf("%s",buffer);
+            send(sock, buffer, 1024,0);
+            download(sock);
+            
         }
         else if(!strcmp(buffer,"put"))
         {
